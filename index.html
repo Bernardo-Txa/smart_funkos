@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Funkos</title>
+  <link rel="icon" href="images/SmartFunkoIcone.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="banner">
+  <div class="header-content">
+    <div class="logo">
+      <img src="images/SmartFunko.png" alt="Smart Funkos">
+    </div>
+
+    <div class="banner-conteudo">
+      <h1>Novos Funkos 🔥</h1>
+      <p>Confira os últimos lançamentos</p>
+    </div>
+
+    <div class="acoes">
+      <a href="https://chat.whatsapp.com/EGgWvmg1VZHJBD94mr8hDQ?mode=gi_t" target="_blank" class="whatsapp">
+        WhatsApp
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- BUSCA -->
+<section class="busca">
+  <input type="text" id="buscaInput" placeholder="Buscar Funko...">
+</section>
+
+<!-- CATEGORIAS -->
+<section id="categorias" class="categorias"></section>
+
+<!-- CONTROLES -->
+<section class="catalogo-topo">
+  <p id="resultadoInfo" class="resultado-info">Carregando produtos...</p>
+
+  <label class="ordenacao-box" for="ordenacaoSelect">
+    <span>Ordenar por</span>
+    <select id="ordenacaoSelect">
+      <option value="relevancia">Relevancia</option>
+      <option value="preco-asc">Menor preco</option>
+      <option value="preco-desc">Maior preco</option>
+      <option value="nome-asc">Nome A-Z</option>
+    </select>
+  </label>
+</section>
+
+<!-- PRODUTOS -->
+<main>
+  <div id="catalogo"></div>
+</main>
+
+<!-- BOTÃO CARRINHO -->
+<button id="enviarPedido" class="btn-pedido">
+  🛒 <span id="contador">0</span>
+</button>
+
+<!-- OVERLAY -->
+<div id="overlay" class="overlay" onclick="fecharCarrinho()"></div>
+
+<!-- CARRINHO LATERAL -->
+<div id="carrinho" class="carrinho">
+
+  <div class="carrinho-header">
+    <h2>🛒 Carrinho</h2>
+    <button onclick="fecharCarrinho()">✖</button>
+  </div>
+
+  <div id="listaCarrinho" class="carrinho-lista"></div>
+
+  <div class="carrinho-footer">
+    <p id="totalCarrinho">Total: R$ 0</p>
+    <button onclick="abrirCheckoutModal()">Enviar Pedido</button>
+  </div>
+
+</div>
+
+<!-- MODAL CHECKOUT -->
+<div id="checkoutModal" class="checkout-modal" aria-hidden="true">
+  <div class="checkout-card">
+    <div class="checkout-header">
+      <h2>Finalizar pedido</h2>
+      <button type="button" onclick="fecharCheckoutModal()">✖</button>
+    </div>
+
+    <form id="checkoutForm" class="checkout-form">
+      <label for="nomeClienteInput">Seu nome</label>
+      <input type="text" id="nomeClienteInput" placeholder="Digite seu nome" maxlength="60" required>
+
+      <div class="checkout-resumo">
+        <p id="checkoutResumoItens">0 itens</p>
+        <strong id="checkoutResumoTotal">Total: R$ 0,00</strong>
+      </div>
+
+      <button type="submit" id="confirmarCheckout">Enviar no WhatsApp</button>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast" aria-live="polite"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
