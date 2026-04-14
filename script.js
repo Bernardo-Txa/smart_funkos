@@ -14,17 +14,22 @@ configurarEventosIniciais();
 fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRTfb_G6PJPgYb9cyyZL3lwtVKOqwyqXmfO3JjJIqC65J4LLyXREzVYgIL4q3-_ukqN0fWpFY1nVQJk/pub?output=csv')
   .then(res => res.text())
   .then(data => {
-    const linhas = data.split("\n").slice(1);
+    const linhas = parseCSV(data);
+    const cabecalho = linhas[0].map(coluna => coluna.trim());
+    const produtos = linhas.slice(1);
 
-    produtosGlobal = linhas.map(linha => {
-      const [nome, preco, imagem, status, categoria, special] = linha.split(",");
+    produtosGlobal = produtos.map(linha => {
+      const produto = Object.fromEntries(
+        cabecalho.map((coluna, index) => [coluna, linha[index]?.trim() || ""])
+      );
+
       return {
-        nome: nome?.trim(),
-        preco: normalizarPreco(preco),
-        imagem: imagem?.trim() || IMAGEM_PLACEHOLDER,
-        status: status?.trim(),
-        categoria: categoria?.trim(),
-        special: special?.trim()
+        nome: produto.nome,
+        preco: normalizarPreco(produto.preco),
+        imagem: produto.imagem || IMAGEM_PLACEHOLDER,
+        status: produto.status,
+        categoria: produto.categoria,
+        special: produto.special
       };
     }).filter(produto => produto.nome);
 
@@ -100,6 +105,57 @@ function ativarBotao(botao) {
 
 /* ================= FILTROS ================= */
 
+function parseCSV(texto) {
+  const linhas = [];
+  let linha = [];
+  let valor = "";
+  let dentroDeAspas = false;
+
+  for (let i = 0; i < texto.length; i++) {
+    const char = texto[i];
+    const proximoChar = texto[i + 1];
+
+    if (char === '"' && dentroDeAspas && proximoChar === '"') {
+      valor += '"';
+      i++;
+      continue;
+    }
+
+    if (char === '"') {
+      dentroDeAspas = !dentroDeAspas;
+      continue;
+    }
+
+    if (char === "," && !dentroDeAspas) {
+      linha.push(valor);
+      valor = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !dentroDeAspas) {
+      if (char === "\r" && proximoChar === "\n") i++;
+      linha.push(valor);
+
+      if (linha.some(campo => campo.trim())) {
+        linhas.push(linha);
+      }
+
+      linha = [];
+      valor = "";
+      continue;
+    }
+
+    valor += char;
+  }
+
+  if (valor || linha.length) {
+    linha.push(valor);
+    linhas.push(linha);
+  }
+
+  return linhas;
+}
+
 function produtoIndisponivel(produto) {
   return produto?.status?.trim().toLowerCase() === "indisponivel";
 }
@@ -107,6 +163,7 @@ function produtoIndisponivel(produto) {
 function normalizarPreco(preco) {
   return (preco || "")
     .trim()
+    .replace(/[^\d,.]/g, "")
     .replace(/\./g, "")
     .replace(",", ".");
 }
