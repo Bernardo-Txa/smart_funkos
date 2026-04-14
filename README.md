@@ -1,10 +1,11 @@
 # Smart Funkos
 
-Website simples para vitrine e venda de Funko Pops, com catalogo carregado a partir de uma planilha publicada em CSV e finalizacao de pedido pelo WhatsApp.
+Website simples para vitrine e venda de Funko Pops, com catalogo gerado a partir de uma planilha publicada em CSV e finalizacao de pedido pelo WhatsApp.
 
 ## Funcionalidades
 
-- Catalogo de produtos carregado via CSV do Google Sheets.
+- Catalogo de produtos carregado via `produtos.json`.
+- Geracao de `produtos.json` a partir do CSV publico do Google Sheets.
 - Filtro por categoria.
 - Busca por nome do produto.
 - Ordenacao por relevancia, menor preco, maior preco e nome A-Z.
@@ -23,7 +24,13 @@ Website simples para vitrine e venda de Funko Pops, com catalogo carregado a par
 ├── images/
 │   ├── SmartFunko.png
 │   └── SmartFunkoIcone.png
+├── scripts/
+│   └── gerar_produtos_json.py
+├── .github/
+│   └── workflows/
+│       └── atualizar-produtos.yml
 ├── index.html
+├── produtos.json
 ├── script.js
 ├── style.css
 └── README.md
@@ -31,13 +38,25 @@ Website simples para vitrine e venda de Funko Pops, com catalogo carregado a par
 
 ## Como Rodar
 
-Abra o arquivo `index.html` no navegador.
+Use um servidor local para evitar bloqueios de `fetch` ao carregar `produtos.json`.
 
-Se preferir rodar com um servidor local, use uma extensao como Live Server no VS Code ou qualquer servidor estatico simples.
+Opcoes simples:
 
-## CSV de Produtos
+```bash
+python3 -m http.server 5500
+```
 
-O catalogo espera os dados nesta ordem:
+Depois acesse:
+
+```txt
+http://localhost:5500
+```
+
+Tambem funciona usar uma extensao como Live Server no VS Code.
+
+## Dados de Produtos
+
+A planilha publicada em CSV e usada como fonte deve ter, no minimo, estas colunas:
 
 ```csv
 nome,preco,imagem,status,categoria,special
@@ -59,12 +78,39 @@ Campos:
 - `categoria`: categoria exibida no card e usada nos filtros.
 - `special`: texto opcional para linhas como `Pop! Plus` ou `Glows In The Dark`.
 
+## Gerar produtos.json
+
+Para atualizar o catalogo localmente:
+
+```bash
+python3 scripts/gerar_produtos_json.py
+```
+
+O script baixa o CSV do Google Sheets, normaliza os campos principais e gera:
+
+```txt
+produtos.json
+```
+
+O site consome esse arquivo diretamente, evitando processar CSV grande no navegador.
+
+## Atualizacao Automatica
+
+O workflow `.github/workflows/atualizar-produtos.yml` permite atualizar o `produtos.json` pelo GitHub Actions.
+
+Ele pode ser executado:
+
+- Manualmente em `Actions > Atualizar produtos > Run workflow`.
+- Automaticamente uma vez por dia pelo agendamento configurado.
+
 ## Tecnologias
 
 - HTML
 - CSS
 - JavaScript puro
 - Google Sheets publicado como CSV
+- JSON pre-processado
+- GitHub Actions
 - WhatsApp checkout
 
 ## Publicacao
