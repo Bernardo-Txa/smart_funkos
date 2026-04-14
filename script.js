@@ -3,7 +3,12 @@ let carrinho = [];
 let categoriaAtual = "todos";
 let ordenacaoAtual = "relevancia";
 const CHAVE_CARRINHO = "smart-funkos-carrinho";
-const IMAGEM_PLACEHOLDER = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'><rect width='300' height='300' fill='%23f3f4f6'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236b7280' font-family='Arial' font-size='20'>Imagem indisponivel</text></svg>";
+const IMAGEM_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <rect width="300" height="300" fill="#f3f4f6"/>
+    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#6b7280" font-family="Arial" font-size="20">Imagem indisponivel</text>
+  </svg>
+`)}`;
 let toastTimeout;
 
 mostrarSkeleton();
@@ -161,11 +166,17 @@ function produtoIndisponivel(produto) {
 }
 
 function normalizarPreco(preco) {
-  return (preco || "")
+  const valor = String(preco || "")
     .trim()
-    .replace(/[^\d,.]/g, "")
-    .replace(/\./g, "")
-    .replace(",", ".");
+    .replace(/[^\d,.]/g, "");
+
+  if (!valor) return "";
+
+  if (valor.includes(",")) {
+    return valor.replace(/\./g, "").replace(",", ".");
+  }
+
+  return valor;
 }
 
 function converterPrecoNumero(preco) {
@@ -319,7 +330,7 @@ function renderizar(produtos) {
 
       div.innerHTML = `
         <div class="produto-imagem-box">
-          <img src="${p.imagem}" loading="lazy" alt="${p.nome}" onerror="this.onerror=null;this.src='${IMAGEM_PLACEHOLDER}'">
+          <img src="${p.imagem}" loading="lazy" alt="${p.nome}">
         </div>
         <div class="produto-conteudo">
           ${p.special ? `<span class="produto-special">${p.special}</span>` : ""}
@@ -342,7 +353,16 @@ function renderizar(produtos) {
       });
     });
 
-    document.querySelectorAll("img").forEach(img => {
+    document.querySelectorAll(".produto img").forEach(img => {
+      img.onerror = () => {
+        img.onerror = null;
+        img.src = IMAGEM_PLACEHOLDER;
+      };
+
+      if (img.complete) {
+        img.classList.add("loaded");
+      }
+
       img.onload = () => img.classList.add("loaded");
     });
 
