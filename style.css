@@ -231,6 +231,32 @@ body {
   color: #4b5563;
 }
 
+.catalogo-acoes {
+  display: flex;
+  justify-content: center;
+  padding: 0 30px 40px;
+}
+
+.btn-carregar-mais {
+  border: none;
+  background: #111827;
+  color: white;
+  padding: 13px 24px;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.btn-carregar-mais:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.btn-carregar-mais[hidden] {
+  display: none;
+}
+
 /* ================= CARD ================= */
 
 .produto {
@@ -824,6 +850,15 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
     padding: 16px;
+  }
+
+  .catalogo-acoes {
+    padding: 0 16px 92px;
+  }
+
+  .btn-carregar-mais {
+    width: 100%;
+    padding: 15px 20px;
   }
 
   .produto {

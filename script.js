@@ -2,7 +2,11 @@ let produtosGlobal = [];
 let carrinho = [];
 let categoriaAtual = "todos";
 let ordenacaoAtual = "relevancia";
+let produtosFiltradosAtual = [];
+let produtosRenderizados = 0;
+let buscaTimeout;
 const CHAVE_CARRINHO = "smart-funkos-carrinho";
+const PRODUTOS_POR_LOTE = 48;
 const IMAGEM_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
     <rect width="300" height="300" fill="#f3f4f6"/>
@@ -292,82 +296,89 @@ function aplicarFiltros() {
 
 function renderizar(produtos) {
   const catalogo = document.getElementById("catalogo");
+  const botaoCarregarMais = document.getElementById("carregarMais");
 
-  catalogo.style.opacity = 0;
+  produtosFiltradosAtual = produtos;
+  produtosRenderizados = 0;
+  catalogo.innerHTML = "";
 
-  setTimeout(() => {
-    catalogo.innerHTML = "";
+  if (botaoCarregarMais) {
+    botaoCarregarMais.hidden = true;
+  }
 
-    if (produtos.length === 0) {
-      catalogo.innerHTML = `
-        <div class="catalogo-vazio">
-          <h3>Nenhum Funko encontrado</h3>
-          <p>Tente buscar por outro nome ou categoria.</p>
-        </div>
-      `;
-      catalogo.style.opacity = 1;
-      return;
-    }
+  if (produtos.length === 0) {
+    catalogo.innerHTML = `
+      <div class="catalogo-vazio">
+        <h3>Nenhum Funko encontrado</h3>
+        <p>Tente buscar por outro nome ou categoria.</p>
+      </div>
+    `;
+    return;
+  }
 
-    produtos.forEach((p, index) => {
-      const indisponivel = produtoIndisponivel(p);
-      const div = document.createElement("div");
-      div.classList.add("produto");
+  renderizarProximoLote();
+}
 
-      if (indisponivel) {
-        div.classList.add("indisponivel");
-      }
+function renderizarProximoLote() {
+  const catalogo = document.getElementById("catalogo");
+  const botaoCarregarMais = document.getElementById("carregarMais");
+  const inicio = produtosRenderizados;
+  const fim = Math.min(inicio + PRODUTOS_POR_LOTE, produtosFiltradosAtual.length);
+  const fragmento = document.createDocumentFragment();
 
-      div.style.animationDelay = `${index * 0.05}s`;
+  produtosFiltradosAtual.slice(inicio, fim).forEach((p, index) => {
+    fragmento.appendChild(criarCardProduto(p, inicio + index));
+  });
 
-      let botao = "";
+  catalogo.appendChild(fragmento);
+  produtosRenderizados = fim;
 
-      if (indisponivel) {
-        botao = `<button disabled class="botao-indisponivel">Indisponível</button>`;
-      } else {
-        botao = `<button class="botao-adicionar" data-nome="${encodeURIComponent(p.nome)}" data-preco="${p.preco}">Adicionar</button>`;
-      }
+  if (botaoCarregarMais) {
+    botaoCarregarMais.hidden = produtosRenderizados >= produtosFiltradosAtual.length;
+  }
+}
 
-      div.innerHTML = `
-        <div class="produto-imagem-box">
-          <img src="${p.imagem}" loading="lazy" alt="${p.nome}">
-        </div>
-        <div class="produto-conteudo">
-          ${p.special ? `<span class="produto-special">${p.special}</span>` : ""}
-          <span class="produto-linha">${p.categoria || "Funko Pop"}</span>
-          <h2>${p.nome}</h2>
-          <p class="produto-preco">${formatarPreco(p.preco)}</p>
-          ${botao}
-        </div>
-      `;
+function criarCardProduto(p, index) {
+  const indisponivel = produtoIndisponivel(p);
+  const div = document.createElement("div");
+  div.classList.add("produto");
+  div.style.animationDelay = `${Math.min(index, PRODUTOS_POR_LOTE) * 0.02}s`;
 
-      catalogo.appendChild(div);
-    });
+  if (indisponivel) {
+    div.classList.add("indisponivel");
+  }
 
-    document.querySelectorAll(".botao-adicionar").forEach(botao => {
-      botao.addEventListener("click", () => {
-        adicionarCarrinho(
-          decodeURIComponent(botao.dataset.nome),
-          botao.dataset.preco
-        );
-      });
-    });
+  const botao = indisponivel
+    ? `<button disabled class="botao-indisponivel">Indisponível</button>`
+    : `<button class="botao-adicionar" data-nome="${encodeURIComponent(p.nome)}" data-preco="${p.preco}">Adicionar</button>`;
 
-    document.querySelectorAll(".produto img").forEach(img => {
-      img.onerror = () => {
-        img.onerror = null;
-        img.src = IMAGEM_PLACEHOLDER;
-      };
+  div.innerHTML = `
+    <div class="produto-imagem-box">
+      <img src="${p.imagem}" loading="lazy" alt="${p.nome}">
+    </div>
+    <div class="produto-conteudo">
+      ${p.special ? `<span class="produto-special">${p.special}</span>` : ""}
+      <span class="produto-linha">${p.categoria || "Funko Pop"}</span>
+      <h2>${p.nome}</h2>
+      <p class="produto-preco">${formatarPreco(p.preco)}</p>
+      ${botao}
+    </div>
+  `;
 
-      if (img.complete) {
-        img.classList.add("loaded");
-      }
+  const img = div.querySelector("img");
 
-      img.onload = () => img.classList.add("loaded");
-    });
+  img.onerror = () => {
+    img.onerror = null;
+    img.src = IMAGEM_PLACEHOLDER;
+  };
 
-    catalogo.style.opacity = 1;
-  }, 150);
+  if (img.complete) {
+    img.classList.add("loaded");
+  }
+
+  img.onload = () => img.classList.add("loaded");
+
+  return div;
 }
 
 /* ================= CARRINHO ================= */
@@ -458,6 +469,8 @@ function mostrarToast(texto) {
 function configurarEventosIniciais() {
   const ordenacaoSelect = document.getElementById("ordenacaoSelect");
   const checkoutForm = document.getElementById("checkoutForm");
+  const catalogo = document.getElementById("catalogo");
+  const botaoCarregarMais = document.getElementById("carregarMais");
 
   ordenacaoSelect?.addEventListener("change", (e) => {
     ordenacaoAtual = e.target.value;
@@ -468,6 +481,19 @@ function configurarEventosIniciais() {
     e.preventDefault();
     enviarWhatsApp();
   });
+
+  catalogo?.addEventListener("click", (e) => {
+    const botao = e.target.closest(".botao-adicionar");
+
+    if (!botao) return;
+
+    adicionarCarrinho(
+      decodeURIComponent(botao.dataset.nome),
+      botao.dataset.preco
+    );
+  });
+
+  botaoCarregarMais?.addEventListener("click", renderizarProximoLote);
 }
 
 /* ATUALIZAR UI */
@@ -569,7 +595,8 @@ function enviarWhatsApp() {
 
 document.addEventListener("input", (e) => {
   if (e.target.id === "buscaInput") {
-    aplicarFiltros();
+    clearTimeout(buscaTimeout);
+    buscaTimeout = setTimeout(aplicarFiltros, 250);
   }
 });
 
