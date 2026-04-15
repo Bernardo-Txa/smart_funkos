@@ -24,35 +24,44 @@ Website simples para vitrine e venda de Funko Pops, com catalogo gerado a partir
 ├── images/
 │   ├── SmartFunko.png
 │   └── SmartFunkoIcone.png
+├── public/
+│   ├── CNAME
+│   └── produtos.json
 ├── scripts/
 │   └── gerar_produtos_json.py
+├── src/
+│   ├── data/
+│   ├── scripts/
+│   └── styles/
 ├── .github/
 │   └── workflows/
-│       └── atualizar-produtos.yml
+│       ├── atualizar-produtos.yml
+│       └── deploy-pages.yml
 ├── index.html
+├── package.json
 ├── produtos.json
 ├── script.js
 ├── style.css
+├── vite.config.js
 └── README.md
 ```
 
 ## Como Rodar
 
-Use um servidor local para evitar bloqueios de `fetch` ao carregar `produtos.json`.
-
-Opcoes simples:
+Instale as dependencias e rode o servidor Vite:
 
 ```bash
-python3 -m http.server 5500
+npm install
+npm run dev
 ```
 
-Depois acesse:
+Para gerar a versao estatica de producao:
 
-```txt
-http://localhost:5500
+```bash
+npm run build
 ```
 
-Tambem funciona usar uma extensao como Live Server no VS Code.
+O build final fica na pasta `dist/`.
 
 ## Dados de Produtos
 
@@ -90,9 +99,10 @@ O script baixa o CSV do Google Sheets, normaliza os campos principais e gera:
 
 ```txt
 produtos.json
+public/produtos.json
 ```
 
-O site consome esse arquivo diretamente, evitando processar CSV grande no navegador.
+O site consome `produtos.json` como JSON estatico, evitando processar CSV grande no navegador.
 
 ## Atualizacao Automatica
 
@@ -106,13 +116,17 @@ Ele pode ser executado:
 ## Tecnologias
 
 - HTML
-- CSS
-- JavaScript puro
+- CSS modular
+- JavaScript modular
+- Vite
 - Google Sheets publicado como CSV
 - JSON pre-processado
 - GitHub Actions
+- GitHub Pages
 - WhatsApp checkout
 
 ## Publicacao
 
 Este projeto pode ser publicado no GitHub Pages por ser um site estatico.
+
+O workflow `.github/workflows/deploy-pages.yml` gera o build com Vite e publica a pasta `dist/`.

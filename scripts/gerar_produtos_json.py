@@ -8,6 +8,7 @@ from pathlib import Path
 CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRTfb_G6PJPgYb9cyyZL3lwtVKOqwyqXmfO3JjJIqC65J4LLyXREzVYgIL4q3-_ukqN0fWpFY1nVQJk/pub?output=csv"
 ROOT_DIR = Path(__file__).resolve().parents[1]
 OUTPUT_PATH = ROOT_DIR / "produtos.json"
+PUBLIC_OUTPUT_PATH = ROOT_DIR / "public" / "produtos.json"
 
 
 def normalizar_preco(preco):
@@ -52,12 +53,13 @@ def main():
         if produto["nome"]
     ]
 
-    OUTPUT_PATH.write_text(
-        json.dumps(produtos, ensure_ascii=False, separators=(",", ":")),
-        encoding="utf-8",
-    )
+    conteudo_json = json.dumps(produtos, ensure_ascii=False, separators=(",", ":"))
 
-    print(f"{len(produtos)} produtos gerados em {OUTPUT_PATH}")
+    OUTPUT_PATH.write_text(conteudo_json, encoding="utf-8")
+    PUBLIC_OUTPUT_PATH.parent.mkdir(exist_ok=True)
+    PUBLIC_OUTPUT_PATH.write_text(conteudo_json, encoding="utf-8")
+
+    print(f"{len(produtos)} produtos gerados em {OUTPUT_PATH} e {PUBLIC_OUTPUT_PATH}")
 
 
 if __name__ == "__main__":

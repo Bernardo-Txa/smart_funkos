@@ -1,0 +1,17 @@
+:root {
+  --sf-ink: #0F172A;
+  --sf-black: #020617;
+  --sf-purple: #4F46E5;
+  --sf-blue: #2563EB;
+  --sf-blue-bright: #0EA5E9;
+  --sf-cyan: #22D3EE;
+  --sf-yellow: #FACC15;
+  --sf-orange: #F97316;
+  --sf-red: #ef3e35;
+  --sf-surface: #0F172A;
+  --sf-soft: #111827;
+  --sf-muted: #94A3B8;
+  --sf-glow-blue: rgba(14, 165, 233, 0.4);
+  --sf-glow-purple: rgba(79, 70, 229, 0.28);
+  --sf-glow-yellow: rgba(250, 204, 21, 0.32);
+}

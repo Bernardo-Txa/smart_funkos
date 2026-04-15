@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Funkos</title>
   <link rel="icon" href="images/SmartFunkoIcone.png" type="image/png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/src/styles/main.css">
 </head>
 <body>
 
@@ -87,7 +87,7 @@
 <!-- OVERLAY -->
 <div id="overlay" class="overlay" onclick="fecharCarrinho()"></div>
 
-<!-- CARRINHO LATERAL -->
+<!-- CARRINHO -->
 <div id="carrinho" class="carrinho">
 
   <div class="carrinho-header">
@@ -102,6 +102,40 @@
     <button onclick="abrirCheckoutModal()">Enviar Pedido</button>
   </div>
 
+</div>
+
+<!-- MODAL PRODUTO -->
+<div id="produtoModal" class="produto-modal" aria-hidden="true">
+  <div class="produto-modal-card" role="dialog" aria-modal="true" aria-labelledby="produtoModalTitulo">
+    <button type="button" class="produto-modal-fechar" onclick="fecharProdutoModal()" aria-label="Fechar detalhes do produto">✖</button>
+
+    <div class="produto-modal-media">
+      <img id="produtoModalImagem" src="" alt="">
+    </div>
+
+    <div class="produto-modal-info">
+      <div class="produto-modal-tags">
+        <span id="produtoModalSpecial" class="produto-modal-special" hidden></span>
+        <span id="produtoModalStatus" class="produto-modal-status"></span>
+      </div>
+
+      <span id="produtoModalCategoria" class="produto-modal-categoria"></span>
+      <h2 id="produtoModalTitulo"></h2>
+      <p id="produtoModalDescricao" class="produto-modal-descricao"></p>
+      <strong id="produtoModalPreco" class="produto-modal-preco"></strong>
+
+      <div class="produto-modal-beneficios">
+        <span>Produto para colecionador</span>
+        <span>Pedido finalizado no WhatsApp</span>
+        <span>Atendimento Smart Funkos</span>
+      </div>
+
+      <div class="produto-modal-acoes">
+        <button id="produtoModalAdicionar" type="button">Adicionar ao carrinho</button>
+        <a id="produtoModalWhatsApp" href="#" target="_blank" rel="noopener noreferrer">Falar no WhatsApp</a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL CHECKOUT -->
@@ -129,7 +163,7 @@
 <!-- TOAST -->
 <div id="toast" class="toast" aria-live="polite"></div>
 
-<script src="script.js"></script>
+<script type="module" src="/src/scripts/main.js"></script>
 
 </body>
 </html>
