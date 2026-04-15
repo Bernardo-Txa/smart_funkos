@@ -80,7 +80,7 @@ function criarCategorias(produtos) {
   container.innerHTML = "";
 
   if (select) {
-    select.innerHTML = `<option value="todos">Selecionar categoria</option>`;
+    select.innerHTML = `<option value="todos">Mais categorias</option>`;
   }
 
   const categorias = [...new Set(produtos.map(p => p.categoria).filter(Boolean))]
@@ -115,7 +115,9 @@ function criarCategorias(produtos) {
     container.appendChild(btn);
   });
 
-  categorias.forEach(cat => {
+  categorias
+    .filter(cat => !categoriasDestaque.includes(cat))
+    .forEach(cat => {
     const option = document.createElement("option");
     option.value = cat;
     option.innerText = cat;

@@ -79,20 +79,63 @@ body {
   padding-top: 12px;
 }
 
-/* WHATSAPP */
-.whatsapp {
-  background: #25D366;
+/* REDES SOCIAIS */
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
   color: white;
-  padding: 11px 18px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
   border-radius: 999px;
   text-decoration: none;
   font-size: 14px;
   font-weight: bold;
-  transition: 0.3s;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: width 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
-.whatsapp:hover {
-  background: #1ebe5d;
+.social-link svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  flex: 0 0 auto;
+}
+
+.social-link span {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width 0.25s ease, opacity 0.2s ease;
+}
+
+.social-link:hover,
+.social-link:focus-visible {
+  gap: 8px;
+  width: 132px;
+}
+
+.social-link:hover span,
+.social-link:focus-visible span {
+  max-width: 90px;
+  opacity: 1;
+}
+
+.social-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+  filter: brightness(1.05);
+}
+
+.whatsapp {
+  background: #25D366;
+}
+
+.instagram {
+  background: linear-gradient(135deg, #f58529, #dd2a7b 45%, #8134af 75%, #515bd4);
 }
 
 /* ================= BANNER ================= */
@@ -189,9 +232,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-  max-width: 1100px;
+  max-width: 1180px;
   margin: 18px auto;
   padding: 0 30px;
 }
@@ -227,19 +270,47 @@ body {
 .categorias-select-box {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #4b5563;
+  gap: 0;
+  color: white;
   font-size: 14px;
+  background: black;
+  border: 1px solid black;
+  border-radius: 999px;
+  height: 39px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.categorias-select-box span {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  padding: 0 13px;
+  color: black;
+  background: #ffcc00;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .categorias-select-box select {
-  min-width: 220px;
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 999px;
-  background: white;
+  min-width: 180px;
+  height: 100%;
+  padding: 0 36px 0 14px;
+  border: none;
+  border-radius: 0;
+  background: black;
+  color: white;
   outline: none;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.categorias-select-box select option {
+  background: white;
+  color: #111827;
 }
 
 /* ================= GRID ================= */
@@ -291,6 +362,8 @@ body {
 /* ================= CARD ================= */
 
 .produto {
+  display: flex;
+  flex-direction: column;
   background: #ffffff;
   border: 1px solid #e6e6e6;
   border-radius: 16px;
@@ -322,6 +395,7 @@ body {
 }
 
 .produto-conteudo {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -371,6 +445,7 @@ body {
   line-height: 1.3;
   margin: 0;
   color: #111111;
+  min-height: 42px;
 }
 
 .produto p {
@@ -389,7 +464,7 @@ body {
 .produto button {
   display: block;
   width: 100%;
-  margin-top: 8px;
+  margin-top: auto;
   background: #f1f1f5;
   color: #1f1f1f;
   padding: 13px 16px;
@@ -811,9 +886,22 @@ body {
     font-size: 14px;
   }
 
-  .whatsapp {
-    padding: 10px 18px;
+  .social-link {
+    width: auto;
+    gap: 8px;
+    min-height: 40px;
+    padding: 10px 14px;
     font-size: 13px;
+  }
+
+  .social-link svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .social-link span {
+    max-width: 90px;
+    opacity: 1;
   }
 
   .busca {
@@ -861,18 +949,22 @@ body {
 
   .categorias-select-box {
     width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    background: white;
-    border: 1px solid #ececec;
-    border-radius: 14px;
-    padding: 10px 12px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    background: black;
+    border: 1px solid black;
+    border-radius: 999px;
+    height: 44px;
+    padding: 0;
+    box-shadow: none;
   }
 
   .categorias-select-box select {
-    width: 100%;
+    flex: 1;
     min-width: 0;
+    height: 100%;
   }
 
   .catalogo-topo {
@@ -955,6 +1047,7 @@ body {
   .produto h2 {
     font-size: 14px;
     line-height: 1.25;
+    min-height: 53px;
   }
 
   .produto-preco {
@@ -963,7 +1056,7 @@ body {
   }
 
   .produto button {
-    margin-top: 8px;
+    margin-top: auto;
     padding: 12px 10px;
     font-size: 12px;
   }
@@ -1029,6 +1122,7 @@ body {
 
   .produto h2 {
     font-size: 18px;
+    min-height: 48px;
   }
 
   .produto-preco {
