@@ -7,6 +7,16 @@ let produtosRenderizados = 0;
 let buscaTimeout;
 const CHAVE_CARRINHO = "smart-funkos-carrinho";
 const PRODUTOS_POR_LOTE = 48;
+const CATEGORIAS_DESTAQUE = [
+  "Marvel",
+  "Disney",
+  "Star Wars",
+  "Harry Potter",
+  "One Piece",
+  "Pokémon",
+  "Dragon Ball",
+  "DC"
+];
 const IMAGEM_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
     <rect width="300" height="300" fill="#f3f4f6"/>
@@ -65,8 +75,18 @@ function mostrarSkeleton() {
 
 function criarCategorias(produtos) {
   const container = document.getElementById("categorias");
+  const select = document.getElementById("categoriaSelect");
 
-  const categorias = [...new Set(produtos.map(p => p.categoria))];
+  container.innerHTML = "";
+
+  if (select) {
+    select.innerHTML = `<option value="todos">Selecionar categoria</option>`;
+  }
+
+  const categorias = [...new Set(produtos.map(p => p.categoria).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, "pt-BR"));
+  const categoriasDestaque = CATEGORIAS_DESTAQUE
+    .filter(cat => categorias.includes(cat));
 
   const btnTodos = document.createElement("button");
   btnTodos.innerText = "Todos";
@@ -75,24 +95,31 @@ function criarCategorias(produtos) {
   btnTodos.onclick = () => {
     categoriaAtual = "todos";
     ativarBotao(btnTodos);
+    sincronizarCategoriaSelect();
     aplicarFiltros();
   };
 
   container.appendChild(btnTodos);
 
-  categorias.forEach(cat => {
-    if (!cat) return;
-
+  categoriasDestaque.forEach(cat => {
     const btn = document.createElement("button");
     btn.innerText = cat;
 
     btn.onclick = () => {
       categoriaAtual = cat;
       ativarBotao(btn);
+      sincronizarCategoriaSelect(cat);
       aplicarFiltros();
     };
 
     container.appendChild(btn);
+  });
+
+  categorias.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.innerText = cat;
+    select?.appendChild(option);
   });
 }
 
@@ -100,7 +127,15 @@ function ativarBotao(botao) {
   document.querySelectorAll(".categorias button")
     .forEach(b => b.classList.remove("ativo"));
 
-  botao.classList.add("ativo");
+  botao?.classList.add("ativo");
+}
+
+function sincronizarCategoriaSelect(valor = "todos") {
+  const select = document.getElementById("categoriaSelect");
+
+  if (!select) return;
+
+  select.value = valor;
 }
 
 /* ================= FILTROS ================= */
@@ -411,9 +446,19 @@ function configurarEventosIniciais() {
   const checkoutForm = document.getElementById("checkoutForm");
   const catalogo = document.getElementById("catalogo");
   const botaoCarregarMais = document.getElementById("carregarMais");
+  const categoriaSelect = document.getElementById("categoriaSelect");
 
   ordenacaoSelect?.addEventListener("change", (e) => {
     ordenacaoAtual = e.target.value;
+    aplicarFiltros();
+  });
+
+  categoriaSelect?.addEventListener("change", (e) => {
+    categoriaAtual = e.target.value;
+    ativarBotao(
+      [...document.querySelectorAll(".categorias button")]
+        .find(botao => botao.innerText === categoriaAtual || (categoriaAtual === "todos" && botao.innerText === "Todos"))
+    );
     aplicarFiltros();
   });
 

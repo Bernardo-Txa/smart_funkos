@@ -185,13 +185,26 @@ body {
 
 /* ================= CATEGORIAS ================= */
 
+.categorias-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 18px auto;
+  padding: 0 30px;
+}
+
 .categorias {
-  text-align: center;
-  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .categorias button {
-  margin: 5px;
   padding: 10px 15px;
   border: none;
   background: black;
@@ -209,6 +222,24 @@ body {
   background: #ffcc00;
   color: black;
   transform: scale(1.05);
+}
+
+.categorias-select-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.categorias-select-box select {
+  min-width: 220px;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: white;
+  outline: none;
+  cursor: pointer;
 }
 
 /* ================= GRID ================= */
@@ -798,13 +829,23 @@ body {
     background: white;
   }
 
+  .categorias-wrapper {
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 10px;
+    margin: 14px 0;
+    padding: 0 16px;
+  }
+
   .categorias {
     display: flex;
     gap: 8px;
-    margin: 14px 0;
-    padding: 0 16px 6px;
+    width: 100%;
+    padding-bottom: 4px;
     overflow-x: auto;
     text-align: left;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
     scrollbar-width: none;
   }
 
@@ -814,9 +855,24 @@ body {
 
   .categorias button {
     flex: 0 0 auto;
-    margin: 0;
     padding: 10px 14px;
     white-space: nowrap;
+  }
+
+  .categorias-select-box {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    background: white;
+    border: 1px solid #ececec;
+    border-radius: 14px;
+    padding: 10px 12px;
+  }
+
+  .categorias-select-box select {
+    width: 100%;
+    min-width: 0;
   }
 
   .catalogo-topo {
