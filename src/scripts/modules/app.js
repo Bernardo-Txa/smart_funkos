@@ -3,8 +3,7 @@ import { carregarProdutosJson } from "../../data/products.js";
 let produtosGlobal = [];
 let carrinho = [];
 let categoriaAtual = "todos";
-let subcategoriaAtual = "todas";
-let subcategoriasAberto = false;
+let subcategoriaAtual = "";
 let ordenacaoAtual = "relevancia";
 let produtosFiltradosAtual = [];
 let produtosRenderizados = 0;
@@ -96,8 +95,8 @@ function criarCategorias(produtos) {
 
   btnTodos.onclick = () => {
     categoriaAtual = "todos";
-    subcategoriaAtual = "todas";
-    subcategoriasAberto = false;
+    subcategoriaAtual = "";
+    limparSubcategoriaInput();
     ativarBotao(btnTodos);
     atualizarSubcategorias();
     aplicarFiltros();
@@ -108,18 +107,12 @@ function criarCategorias(produtos) {
   [...categoriasDestaque, ...categorias.filter(cat => !categoriasDestaque.includes(cat))]
     .forEach(cat => {
     const btn = document.createElement("button");
-    btn.classList.add("categoria-botao");
-    btn.innerHTML = `
-      <span>${escaparHtml(cat)}</span>
-      <span class="categoria-seta" aria-hidden="true">⌄</span>
-    `;
+    btn.innerText = cat;
 
     btn.onclick = () => {
-      const mesmaCategoria = categoriaAtual === cat;
-
       categoriaAtual = cat;
-      subcategoriaAtual = "todas";
-      subcategoriasAberto = mesmaCategoria ? !subcategoriasAberto : true;
+      subcategoriaAtual = "";
+      limparSubcategoriaInput();
       ativarBotao(btn);
       atualizarSubcategorias();
       aplicarFiltros();
@@ -139,14 +132,7 @@ function ativarBotao(botao) {
 }
 
 function atualizarSubcategorias() {
-  const container = document.getElementById("categorias");
-  const subcategoriaAtualEl = container?.querySelector(".subcategorias-panel");
-
-  subcategoriaAtualEl?.remove();
-  container?.querySelectorAll(".categoria-botao")
-    .forEach(botao => botao.classList.remove("subcategorias-aberto"));
-
-  if (!container || categoriaAtual === "todos" || !subcategoriasAberto) return;
+  const datalist = document.getElementById("subcategoriaOptions");
 
   const produtosDaCategoria = categoriaAtual === "todos"
     ? produtosGlobal
@@ -154,51 +140,21 @@ function atualizarSubcategorias() {
   const subcategorias = [...new Set(produtosDaCategoria.map(p => p.subcategoria).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b, "pt-BR"));
 
-  if (subcategorias.length === 0) return;
+  if (!datalist) return;
 
-  container.querySelector(".categoria-botao.ativo")?.classList.add("subcategorias-aberto");
+  datalist.innerHTML = "";
 
-  const panel = document.createElement("div");
-  panel.className = "subcategorias-panel";
-  panel.innerHTML = `
-    <div class="subcategorias-panel-topo">
-      <strong>${escaparHtml(categoriaAtual)}</strong>
-      <span>Escolha uma subcategoria</span>
-    </div>
-    <div class="subcategorias-grid"></div>
-  `;
-
-  const grid = panel.querySelector(".subcategorias-grid");
-  const criarBotaoSubcategoria = (valor, texto) => {
-    const botao = document.createElement("button");
-    botao.type = "button";
-    botao.innerText = texto;
-    botao.classList.toggle("ativo", subcategoriaAtual === valor);
-    botao.addEventListener("click", () => {
-      subcategoriaAtual = valor;
-      panel.querySelectorAll(".subcategorias-grid button")
-        .forEach(item => item.classList.remove("ativo"));
-      botao.classList.add("ativo");
-      aplicarFiltros();
-    });
-    return botao;
-  };
-
-  grid.appendChild(criarBotaoSubcategoria("todas", "Todas"));
   subcategorias.forEach(subcategoria => {
-    grid.appendChild(criarBotaoSubcategoria(subcategoria, subcategoria));
+    const option = document.createElement("option");
+    option.value = subcategoria;
+    datalist.appendChild(option);
   });
-
-  container.appendChild(panel);
 }
 
-function fecharSubcategoriasAoClicarFora(evento) {
-  const container = document.getElementById("categorias");
+function limparSubcategoriaInput() {
+  const input = document.getElementById("subcategoriaInput");
 
-  if (!subcategoriasAberto || container?.contains(evento.target)) return;
-
-  subcategoriasAberto = false;
-  atualizarSubcategorias();
+  if (input) input.value = "";
 }
 
 /* ================= FILTROS ================= */
@@ -333,8 +289,10 @@ function aplicarFiltros() {
     filtrados = filtrados.filter(p => p.categoria === categoriaAtual);
   }
 
-  if (subcategoriaAtual !== "todas") {
-    filtrados = filtrados.filter(p => p.subcategoria === subcategoriaAtual);
+  if (subcategoriaAtual) {
+    filtrados = filtrados.filter(p =>
+      (p.subcategoria || "").toLowerCase().includes(subcategoriaAtual)
+    );
   }
 
   filtrados = filtrados.filter(p =>
@@ -602,9 +560,15 @@ function configurarEventosIniciais() {
   const checkoutForm = document.getElementById("checkoutForm");
   const catalogo = document.getElementById("catalogo");
   const botaoCarregarMais = document.getElementById("carregarMais");
+  const subcategoriaInput = document.getElementById("subcategoriaInput");
 
   ordenacaoSelect?.addEventListener("change", (e) => {
     ordenacaoAtual = e.target.value;
+    aplicarFiltros();
+  });
+
+  subcategoriaInput?.addEventListener("input", (e) => {
+    subcategoriaAtual = e.target.value.trim().toLowerCase();
     aplicarFiltros();
   });
 
@@ -643,7 +607,6 @@ function configurarEventosIniciais() {
   });
 
   botaoCarregarMais?.addEventListener("click", renderizarProximoLote);
-  document.addEventListener("click", fecharSubcategoriasAoClicarFora);
 
   document.getElementById("produtoModalAdicionar")?.addEventListener("click", () => {
     if (!produtoModalAtual) return;
