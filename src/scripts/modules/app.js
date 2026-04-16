@@ -3,6 +3,7 @@ import { carregarProdutosJson } from "../../data/products.js";
 let produtosGlobal = [];
 let carrinho = [];
 let categoriaAtual = "todos";
+let subcategoriaAtual = "todas";
 let ordenacaoAtual = "relevancia";
 let produtosFiltradosAtual = [];
 let produtosRenderizados = 0;
@@ -12,14 +13,13 @@ const CHAVE_CARRINHO = "smart-funkos-carrinho";
 const PRODUTOS_POR_LOTE = 48;
 const WHATSAPP_NUMERO = "5527999503159";
 const CATEGORIAS_DESTAQUE = [
-  "Marvel",
   "Disney",
-  "Star Wars",
-  "Harry Potter",
-  "One Piece",
-  "Pokémon",
-  "Dragon Ball",
-  "DC"
+  "Heróis/Vilões",
+  "Animes",
+  "Filmes e Séries",
+  "Música",
+  "Esporte",
+  "Games"
 ];
 const IMAGEM_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
@@ -43,7 +43,9 @@ carregarProdutosJson()
       preco: normalizarPreco(produto.preco),
       imagem: produto.imagem?.trim() || IMAGEM_PLACEHOLDER,
       status: produto.status?.trim() || "disponivel",
-      categoria: produto.categoria?.trim(),
+      categoria: (produto.categoria_principal || produto.categoria)?.trim(),
+      categoria_principal: (produto.categoria_principal || produto.categoria)?.trim(),
+      subcategoria: produto.subcategoria?.trim(),
       special: produto.special?.trim()
     })).filter(produto => produto.nome);
 
@@ -79,13 +81,8 @@ function mostrarSkeleton() {
 
 function criarCategorias(produtos) {
   const container = document.getElementById("categorias");
-  const select = document.getElementById("categoriaSelect");
 
   container.innerHTML = "";
-
-  if (select) {
-    select.innerHTML = `<option value="todos">Mais categorias</option>`;
-  }
 
   const categorias = [...new Set(produtos.map(p => p.categoria).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b, "pt-BR"));
@@ -98,35 +95,31 @@ function criarCategorias(produtos) {
 
   btnTodos.onclick = () => {
     categoriaAtual = "todos";
+    subcategoriaAtual = "todas";
     ativarBotao(btnTodos);
-    sincronizarCategoriaSelect();
+    atualizarSubcategorias();
     aplicarFiltros();
   };
 
   container.appendChild(btnTodos);
 
-  categoriasDestaque.forEach(cat => {
+  [...categoriasDestaque, ...categorias.filter(cat => !categoriasDestaque.includes(cat))]
+    .forEach(cat => {
     const btn = document.createElement("button");
     btn.innerText = cat;
 
     btn.onclick = () => {
       categoriaAtual = cat;
+      subcategoriaAtual = "todas";
       ativarBotao(btn);
-      sincronizarCategoriaSelect(cat);
+      atualizarSubcategorias();
       aplicarFiltros();
     };
 
     container.appendChild(btn);
   });
 
-  categorias
-    .filter(cat => !categoriasDestaque.includes(cat))
-    .forEach(cat => {
-    const option = document.createElement("option");
-    option.value = cat;
-    option.innerText = cat;
-    select?.appendChild(option);
-  });
+  atualizarSubcategorias();
 }
 
 function ativarBotao(botao) {
@@ -136,12 +129,27 @@ function ativarBotao(botao) {
   botao?.classList.add("ativo");
 }
 
-function sincronizarCategoriaSelect(valor = "todos") {
-  const select = document.getElementById("categoriaSelect");
+function atualizarSubcategorias() {
+  const select = document.getElementById("subcategoriaSelect");
 
   if (!select) return;
 
-  select.value = valor;
+  const produtosDaCategoria = categoriaAtual === "todos"
+    ? produtosGlobal
+    : produtosGlobal.filter(produto => produto.categoria === categoriaAtual);
+  const subcategorias = [...new Set(produtosDaCategoria.map(p => p.subcategoria).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+  select.innerHTML = `<option value="todas">Todas subcategorias</option>`;
+
+  subcategorias.forEach(subcategoria => {
+    const option = document.createElement("option");
+    option.value = subcategoria;
+    option.innerText = subcategoria;
+    select.appendChild(option);
+  });
+
+  select.value = subcategoriaAtual;
 }
 
 /* ================= FILTROS ================= */
@@ -276,8 +284,14 @@ function aplicarFiltros() {
     filtrados = filtrados.filter(p => p.categoria === categoriaAtual);
   }
 
+  if (subcategoriaAtual !== "todas") {
+    filtrados = filtrados.filter(p => p.subcategoria === subcategoriaAtual);
+  }
+
   filtrados = filtrados.filter(p =>
-    p.nome.toLowerCase().includes(texto)
+    p.nome.toLowerCase().includes(texto) ||
+    (p.categoria || "").toLowerCase().includes(texto) ||
+    (p.subcategoria || "").toLowerCase().includes(texto)
   );
 
   filtrados = ordenarProdutos(filtrados);
@@ -360,7 +374,7 @@ function criarCardProduto(p, index) {
           ${indisponivel ? "Indisponível" : "Disponível"}
         </span>
       </div>
-      <span class="produto-linha">${escaparHtml(p.categoria || "Funko Pop")}</span>
+      <span class="produto-linha">${escaparHtml(p.subcategoria || p.categoria || "Funko Pop")}</span>
       <h2>${escaparHtml(p.nome)}</h2>
       <p class="produto-preco">${formatarPreco(p.preco)}</p>
       ${botao}
@@ -419,7 +433,9 @@ function abrirProdutoModal(produtoId) {
 
   status.innerText = indisponivel ? "Indisponível" : "Disponível";
   status.classList.toggle("indisponivel", indisponivel);
-  categoria.innerText = produto.categoria || "Funko Pop";
+  categoria.innerText = [produto.categoria, produto.subcategoria]
+    .filter(Boolean)
+    .join(" • ") || "Funko Pop";
   titulo.innerText = produto.nome;
   descricao.innerText = "Veja os detalhes deste colecionável e adicione ao carrinho para finalizar seu pedido pelo WhatsApp.";
   preco.innerText = formatarPreco(produto.preco);
@@ -537,19 +553,15 @@ function configurarEventosIniciais() {
   const checkoutForm = document.getElementById("checkoutForm");
   const catalogo = document.getElementById("catalogo");
   const botaoCarregarMais = document.getElementById("carregarMais");
-  const categoriaSelect = document.getElementById("categoriaSelect");
+  const subcategoriaSelect = document.getElementById("subcategoriaSelect");
 
   ordenacaoSelect?.addEventListener("change", (e) => {
     ordenacaoAtual = e.target.value;
     aplicarFiltros();
   });
 
-  categoriaSelect?.addEventListener("change", (e) => {
-    categoriaAtual = e.target.value;
-    ativarBotao(
-      [...document.querySelectorAll(".categorias button")]
-        .find(botao => botao.innerText === categoriaAtual || (categoriaAtual === "todos" && botao.innerText === "Todos"))
-    );
+  subcategoriaSelect?.addEventListener("change", (e) => {
+    subcategoriaAtual = e.target.value;
     aplicarFiltros();
   });
 
