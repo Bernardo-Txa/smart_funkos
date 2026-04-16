@@ -273,29 +273,59 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   max-width: 1180px;
   margin: 18px auto;
   padding: 0 30px;
+  position: relative;
+  z-index: 3;
 }
 
 .categorias {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
+  position: relative;
+  width: 100%;
 }
 
 .categorias button {
-  padding: 10px 15px;
+  min-height: 46px;
+  padding: 13px 20px;
   border: none;
   background: var(--sf-black);
   color: white;
-  border-radius: 20px;
+  border-radius: 999px;
   cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 0.01em;
   transition: all 0.3s ease;
+}
+
+.categoria-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.categoria-seta {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  line-height: 1;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.categorias button.subcategorias-aberto .categoria-seta {
+  background: rgba(2, 6, 23, 0.14);
+  transform: rotate(180deg);
 }
 
 .categorias button:hover {
@@ -310,50 +340,71 @@
   box-shadow: 0 0 20px var(--sf-glow-yellow), 0 8px 18px rgba(15, 23, 42, 0.16);
 }
 
-.categorias-select-box {
+.subcategorias-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  width: min(960px, calc(100vw - 48px));
+  max-height: 420px;
+  padding: 20px;
+  border: 1px solid rgba(125, 211, 252, 0.22);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(14, 165, 233, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.08),
+    0 0 36px rgba(14, 165, 233, 0.2),
+    0 26px 70px rgba(0, 0, 0, 0.42);
+  overflow: auto;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.subcategorias-panel-topo {
   display: flex;
-  align-items: center;
-  gap: 0;
-  color: white;
-  font-size: 14px;
-  background: var(--sf-black);
-  border: 1px solid var(--sf-black);
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.subcategorias-panel-topo strong {
+  color: #F8FAFC;
+  font-size: 22px;
+}
+
+.subcategorias-panel-topo span {
+  color: var(--sf-muted);
+  font-size: 13px;
+}
+
+.subcategorias-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.subcategorias-grid button {
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid rgba(125, 211, 252, 0.13);
   border-radius: 999px;
-  height: 39px;
-  padding: 0;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-}
-
-.categorias-select-box span {
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  padding: 0 13px;
-  color: white;
-  background: linear-gradient(135deg, var(--sf-blue), var(--sf-blue-bright));
-  font-size: 12px;
-  font-weight: bold;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.categorias-select-box select {
-  min-width: 180px;
-  height: 100%;
-  padding: 0 36px 0 14px;
-  border: none;
-  border-radius: 0;
-  background: var(--sf-black);
-  color: white;
-  outline: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.categorias-select-box select option {
-  background: var(--sf-black);
+  background: rgba(2, 6, 23, 0.52);
   color: #E2E8F0;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.subcategorias-grid button:hover,
+.subcategorias-grid button.ativo {
+  background: linear-gradient(135deg, var(--sf-yellow), #FDE047);
+  color: var(--sf-black);
+  box-shadow: 0 0 18px var(--sf-glow-yellow);
 }
 
 /* ================= GRID ================= */
@@ -1517,7 +1568,7 @@
 
   .categorias {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
     padding-bottom: 4px;
     overflow-x: auto;
@@ -1533,7 +1584,8 @@
 
   .categorias button {
     flex: 0 0 auto;
-    padding: 10px 14px;
+    min-height: 46px;
+    padding: 12px 17px;
     white-space: nowrap;
     border: 1px solid rgba(125, 211, 252, 0.16);
     box-shadow: 0 0 14px rgba(14, 165, 233, 0.08);
@@ -1543,24 +1595,29 @@
     box-shadow: 0 0 22px var(--sf-glow-yellow), 0 0 18px rgba(14, 165, 233, 0.16);
   }
 
-  .categorias-select-box {
+  .subcategorias-panel {
+    position: static;
     width: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0;
-    background: black;
-    border: 1px solid black;
-    border-radius: 999px;
-    height: 44px;
-    padding: 0;
-    box-shadow: 0 0 18px rgba(14, 165, 233, 0.14), 0 12px 26px rgba(2, 6, 23, 0.22);
+    max-height: 330px;
+    margin-top: 6px;
+    padding: 16px;
+    transform: none;
   }
 
-  .categorias-select-box select {
-    flex: 1;
-    min-width: 0;
-    height: 100%;
+  .subcategorias-panel-topo {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .subcategorias-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .subcategorias-grid button {
+    min-height: 42px;
+    text-align: center;
   }
 
   .catalogo-topo {
