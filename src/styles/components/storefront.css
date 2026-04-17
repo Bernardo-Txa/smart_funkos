@@ -5,7 +5,7 @@
   grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr);
   grid-template-rows: auto 1fr;
   grid-template-areas:
-    "logo . actions"
+    "logo nav actions"
     ". headline .";
   align-items: start;
   gap: 8px 24px;
@@ -32,28 +32,59 @@
     drop-shadow(0 10px 22px rgba(0,0,0,0.58));
 }
 
-/* MENU */
-.menu a {
-  margin: 0 10px;
-  text-decoration: none;
-  color: #333;
-  font-size: 14px;
-  position: relative;
+.header-nav {
+  grid-area: nav;
+  align-self: start;
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 5px;
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.34);
+  box-shadow: 0 0 22px rgba(14, 165, 233, 0.12), 0 12px 28px rgba(2, 6, 23, 0.22);
+  backdrop-filter: blur(6px);
 }
 
-.menu a::after {
+.header-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 18px;
+  text-decoration: none;
+  color: #E2E8F0;
+  font-size: 14px;
+  font-weight: bold;
+  position: relative;
+  border-radius: 999px;
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.header-nav a::after {
   content: "";
   position: absolute;
-  width: 0%;
+  width: 0;
   height: 2px;
   background: var(--sf-yellow);
-  left: 0;
-  bottom: -4px;
+  left: 18px;
+  right: 18px;
+  bottom: 4px;
   transition: 0.3s;
 }
 
-.menu a:hover::after {
-  width: 100%;
+.header-nav a:hover,
+.header-nav a:focus-visible {
+  color: white;
+  background: rgba(14, 165, 233, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(125, 211, 252, 0.18);
+  outline: none;
+}
+
+.header-nav a:hover::after,
+.header-nav a:focus-visible::after {
+  width: calc(100% - 36px);
 }
 
 /* AÇÕES */
@@ -1402,6 +1433,196 @@
   transform: translateX(-50%) translateY(0);
 }
 
+/* ================= SOBRE ================= */
+
+.banner-sobre .banner-conteudo {
+  max-width: 620px;
+}
+
+.sobre-page {
+  width: min(1120px, calc(100% - 40px));
+  margin: 48px auto 72px;
+}
+
+.sobre-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.sobre-copy,
+.sobre-card,
+.sobre-beneficios article {
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(14, 165, 233, 0.14), transparent 34%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.94));
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.12), 0 24px 60px rgba(2, 6, 23, 0.28);
+}
+
+.sobre-copy {
+  padding: clamp(28px, 5vw, 48px);
+  border-radius: 30px;
+}
+
+.sobre-kicker {
+  display: inline-flex;
+  margin-bottom: 16px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(14, 165, 233, 0.14);
+  color: #93C5FD;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sobre-copy h2 {
+  max-width: 780px;
+  color: #F8FAFC;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1.02;
+  margin-bottom: 18px;
+}
+
+.sobre-copy p {
+  max-width: 760px;
+  color: #CBD5E1;
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.sobre-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.sobre-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 999px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.sobre-cta.primario {
+  background: linear-gradient(135deg, var(--sf-yellow), var(--sf-orange));
+  color: var(--sf-black);
+  box-shadow: 0 0 22px var(--sf-glow-yellow);
+}
+
+.sobre-cta.secundario {
+  border: 1px solid rgba(125, 211, 252, 0.24);
+  color: #E2E8F0;
+  background: rgba(15, 23, 42, 0.78);
+}
+
+.sobre-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-height: 360px;
+  padding: 28px;
+  border-radius: 30px;
+  text-align: center;
+}
+
+.sobre-card img {
+  width: min(320px, 92%);
+  border-radius: 0;
+  filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.2));
+}
+
+.sobre-card strong {
+  color: #F8FAFC;
+  font-size: 28px;
+}
+
+.sobre-card span {
+  color: var(--sf-muted);
+  line-height: 1.5;
+}
+
+.sobre-beneficios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.sobre-beneficios article {
+  border-radius: 22px;
+  padding: 22px;
+}
+
+.sobre-beneficios strong {
+  display: block;
+  color: #F8FAFC;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.sobre-beneficios p {
+  color: var(--sf-muted);
+  line-height: 1.55;
+}
+
+.sobre-detalhes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.sobre-detalhes article {
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  border-radius: 24px;
+  padding: 26px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.12), transparent 32%),
+    rgba(15, 23, 42, 0.74);
+  box-shadow: 0 18px 42px rgba(2, 6, 23, 0.22);
+}
+
+.sobre-detalhes span {
+  display: inline-flex;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--sf-yellow), #FDE047);
+  color: var(--sf-black);
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sobre-detalhes h3 {
+  color: #F8FAFC;
+  font-size: 24px;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.sobre-detalhes p {
+  color: #CBD5E1;
+  line-height: 1.65;
+}
+
+.sobre-detalhes p + p {
+  margin-top: 10px;
+}
+
 @media (max-width: 768px) {
   body {
     background:
@@ -1423,6 +1644,7 @@
     grid-template-columns: 1fr;
     grid-template-areas:
       "logo"
+      "nav"
       "headline"
       "actions";
     gap: 14px;
@@ -1434,6 +1656,18 @@
   .acoes {
     justify-content: center;
     padding-top: 0;
+  }
+
+  .header-nav {
+    width: fit-content;
+    max-width: 100%;
+    min-height: 42px;
+  }
+
+  .header-nav a {
+    min-height: 32px;
+    padding: 0 16px;
+    font-size: 13px;
   }
 
   .logo img {
@@ -1809,6 +2043,29 @@
     width: calc(100% - 32px);
     bottom: 82px;
     text-align: center;
+  }
+
+  .sobre-page {
+    width: calc(100% - 32px);
+    margin: 28px auto 52px;
+  }
+
+  .sobre-hero,
+  .sobre-beneficios,
+  .sobre-detalhes {
+    grid-template-columns: 1fr;
+  }
+
+  .sobre-copy {
+    padding: 26px;
+  }
+
+  .sobre-copy p {
+    font-size: 15px;
+  }
+
+  .sobre-card {
+    min-height: auto;
   }
 }
 

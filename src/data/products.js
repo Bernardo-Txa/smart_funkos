@@ -1,5 +1,6 @@
 export async function carregarProdutosJson() {
-  const resposta = await fetch("/produtos.json");
+  const baseUrl = import.meta.env?.BASE_URL || "./";
+  const resposta = await fetch(`${baseUrl}produtos.json`);
 
   if (!resposta.ok) {
     throw new Error("Nao foi possivel carregar produtos.json");
