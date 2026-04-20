@@ -16,6 +16,8 @@ Website simples para vitrine e venda de Funko Pops, com catalogo gerado a partir
 - Modal de finalizacao com nome do cliente.
 - Toast de feedback ao adicionar produtos.
 - Favicon e logo personalizados da Smart Funkos.
+- Pagina institucional em `/sobre/`.
+- Google Analytics 4 configurado com a tag `G-J8X07ZYX71`.
 
 ## Estrutura
 
@@ -38,10 +40,10 @@ Website simples para vitrine e venda de Funko Pops, com catalogo gerado a partir
 │       ├── atualizar-produtos.yml
 │       └── deploy-pages.yml
 ├── index.html
+├── sobre/
+│   └── index.html
 ├── package.json
 ├── produtos.json
-├── script.js
-├── style.css
 ├── vite.config.js
 └── README.md
 ```
@@ -124,6 +126,18 @@ Ele pode ser executado:
 - GitHub Actions
 - GitHub Pages
 - WhatsApp checkout
+- Google Analytics 4
+
+## Analytics
+
+O projeto usa Google Analytics 4 com o Measurement ID `G-J8X07ZYX71`.
+
+A tag esta instalada nas paginas:
+
+- `index.html`
+- `sobre/index.html`
+
+Depois do deploy, os acessos podem ser acompanhados no painel do GA4 em tempo real.
 
 ## Publicacao
 
